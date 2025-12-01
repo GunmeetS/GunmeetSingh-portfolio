@@ -3,6 +3,18 @@ import { prisma } from '@/lib/prisma'
 
 export async function GET(request) {
   try {
+    const authHeader = request.headers.get('authorization')
+    const token = authHeader?.replace('Bearer ', '')
+
+    const { isValidToken } = await import('../admin/login/route')
+    
+    if (!token || !isValidToken(token)) {
+      return NextResponse.json(
+        { error: 'Unauthorized - Invalid or missing token' },
+        { status: 401 }
+      )
+    }
+
     const { searchParams } = new URL(request.url)
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '10')

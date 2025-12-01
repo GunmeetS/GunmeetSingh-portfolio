@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client"
 
 import { useState, useEffect } from 'react'
@@ -14,62 +15,89 @@ export default function AdminPage() {
   const [totalPages, setTotalPages] = useState(1)
   const [messageCount, setMessageCount] = useState(0)
   const [searchTerm, setSearchTerm] = useState('')
-  const [darkMode, setDarkMode] = useState(false)
   const [loadingMessages, setLoadingMessages] = useState(false)
+  const [authToken, setAuthToken] = useState(null)
   const router = useRouter()
 
   useEffect(() => {
-    const theme = localStorage.getItem('theme')
-    const isDark = theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)
-    setDarkMode(isDark)
-    if (isDark) {
-      document.documentElement.classList.add('dark')
-    } else {
-      document.documentElement.classList.remove('dark')
-    }
-  }, [])
-
-  useEffect(() => {
-    const isAuth = sessionStorage.getItem('adminAuth') === 'true'
-    if (isAuth) {
+    const token = sessionStorage.getItem('adminToken')
+    if (token) {
+      setAuthToken(token)
       setAuthenticated(true)
-      fetchMessages(1)
+      fetchMessages(1, token)
     }
   }, [])
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault()
     setLoading(true)
 
-    if (password === process.env.NEXT_PUBLIC_ADMIN_PASSWORD) {
-      sessionStorage.setItem('adminAuth', 'true')
-      setAuthenticated(true)
-      fetchMessages(1)
-      toast.success('✅ Logged in successfully!')
-    } else {
-      toast.error('❌ Invalid password')
+    try {
+      const response = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok && data.success) {
+        sessionStorage.setItem('adminToken', data.token)
+        setAuthToken(data.token)
+        setAuthenticated(true)
+        setPassword('') 
+        toast.success('✅ Logged in successfully!')
+        fetchMessages(1, data.token)
+      } else {
+        toast.error('❌ Invalid password')
+      }
+    } catch (error) {
+      toast.error('❌ Login failed. Please try again.')
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }
 
   const handleLogout = () => {
-    sessionStorage.removeItem('adminAuth')
+    sessionStorage.removeItem('adminToken')
     setAuthenticated(false)
+    setAuthToken(null)
     setPassword('')
+    setMessages([])
     toast.success('👋 Logged out successfully')
     setTimeout(() => router.push('/'), 1000)
   }
 
-  const fetchMessages = async (page = 1) => {
+  const fetchMessages = async (page = 1, token = authToken) => {
+    if (!token) {
+      toast.error('No authentication token')
+      return
+    }
+
     setLoadingMessages(true)
     try {
-      const response = await fetch(`/api/messages?page=${page}&limit=10`)
+      const response = await fetch(`/api/messages?page=${page}&limit=10`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      })
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          toast.error('Session expired. Please login again.')
+          handleLogout()
+          return
+        }
+        throw new Error('Failed to fetch messages')
+      }
+
       const data = await response.json()
       setMessages(data.messages || [])
       setMessageCount(data.count || 0)
       setCurrentPage(data.page || 1)
       setTotalPages(data.totalPages || 1)
     } catch (error) {
+      console.error('Fetch messages error:', error)
       toast.error('Failed to load messages')
     } finally {
       setLoadingMessages(false)
@@ -135,7 +163,7 @@ export default function AdminPage() {
     )
   }
 
-  // Admin Dashboard
+  // ADMIN DASHBOARD
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
       <Toaster position="top-right" />
