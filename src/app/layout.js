@@ -43,10 +43,19 @@ export const metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: `${process.env.NEXT_PUBLIC_SITE_URL}`,
+    url: process.env.NEXT_PUBLIC_SITE_URL,
     title: `${process.env.NEXT_PUBLIC_YOUR_NAME} - Full Stack Web Developer`,
     description: "Full Stack Web Developer with 1+ years of experience",
     siteName: `${process.env.NEXT_PUBLIC_YOUR_NAME} Portfolio`,
+    images: [
+      {
+        url: "/opengraph-image", 
+        width: 1200,
+        height: 630,
+        alt: `${process.env.NEXT_PUBLIC_YOUR_NAME} - Full Stack Web Developer`,
+      },
+    ],
+
   },
 
   twitter: {
@@ -54,6 +63,7 @@ export const metadata = {
     title: `${process.env.NEXT_PUBLIC_YOUR_NAME} - Full Stack Web Developer`,
     description:
       "Full Stack Web Developer specializing in Next.js and modern web technologies",
+    images: ["/opengraph-image"],
   },
 
   robots: {
