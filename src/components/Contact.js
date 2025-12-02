@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 "use client"
 
 import { useState, useEffect } from "react"
@@ -8,7 +7,6 @@ import confetti from "canvas-confetti"
 import {
   FiMail,
   FiMapPin,
-  FiPhone,
   FiSend,
   FiGithub,
   FiLinkedin,
@@ -29,10 +27,22 @@ export default function Contact() {
   const [loading, setLoading] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
   const [typedMessage, setTypedMessage] = useState("")
+  const [savedName, setSavedName] = useState("") 
 
   useEffect(() => {
-    if (showSuccess && formData.name) {
-      const message = `Thank you ${formData.name}! I'll review your message and get back to you soon.`
+    const handleKeyPress = (e) => {
+      if (e.ctrlKey && e.shiftKey && e.key === "A") {
+        router.push("/admin")
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyPress)
+    return () => window.removeEventListener("keydown", handleKeyPress)
+  }, [router])
+
+  useEffect(() => {
+    if (showSuccess && savedName) {
+      const message = `Thank you ${savedName}! I'll review your message and get back to you soon.`
       let i = 0
       setTypedMessage("")
 
@@ -47,18 +57,7 @@ export default function Contact() {
 
       return () => clearInterval(typeWriter)
     }
-  }, [showSuccess])
-
-  useEffect(() => {
-    const handleKeyPress = (e) => {
-      if (e.ctrlKey && e.shiftKey && e.key === "A") {
-        router.push("/admin")
-      }
-    }
-
-    window.addEventListener("keydown", handleKeyPress)
-    return () => window.removeEventListener("keydown", handleKeyPress)
-  }, [router])
+  }, [showSuccess, savedName]) 
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -86,18 +85,22 @@ export default function Contact() {
       const data = await response.json()
 
       if (response.ok) {
+        setSavedName(formData.name)
+        
         triggerConfetti()
         setShowSuccess(true)
 
+        setFormData({
+          name: "",
+          email: "",
+          company: "",
+          position: "",
+          message: "",
+        })
+
         setTimeout(() => {
           setShowSuccess(false)
-          setFormData({
-            name: "",
-            email: "",
-            company: "",
-            position: "",
-            message: "",
-          })
+          setSavedName("") 
         }, 5000)
 
       } else {
@@ -136,21 +139,18 @@ export default function Contact() {
                     className="text-teal-600 dark:text-teal-400 flex-shrink-0"
                     size={20}
                   />
-                  <span className="text-sm sm:text-base break-all">{process.env.NEXT_PUBLIC_YOUR_EMAIL}</span>
+                  <span className="text-sm sm:text-base break-all">
+                    {process.env.NEXT_PUBLIC_YOUR_EMAIL}
+                  </span>
                 </div>
-                {/* <div className="flex items-center gap-3 text-gray-700 dark:text-gray-300">
-                  <FiPhone
-                    className="text-teal-600 dark:text-teal-400 flex-shrink-0"
-                    size={20}
-                  />
-                  <span className="text-sm sm:text-base">{process.env.NEXT_PUBLIC_YOUR_MOBILE}</span>
-                </div> */}
                 <div className="flex items-center gap-3 text-gray-700 dark:text-gray-300">
                   <FiMapPin
                     className="text-teal-600 dark:text-teal-400 flex-shrink-0"
                     size={20}
                   />
-                  <span className="text-sm sm:text-base">Available for Remote/Hybrid/On-site</span>
+                  <span className="text-sm sm:text-base">
+                    Available for Remote/Hybrid/On-site
+                  </span>
                 </div>
               </div>
 
@@ -333,13 +333,7 @@ export default function Contact() {
             <button
               onClick={() => {
                 setShowSuccess(false)
-                setFormData({
-                  name: "",
-                  email: "",
-                  company: "",
-                  position: "",
-                  message: "",
-                })
+                setSavedName("") 
               }}
               className="px-6 py-2.5 sm:py-3 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors font-medium text-sm sm:text-base"
             >
