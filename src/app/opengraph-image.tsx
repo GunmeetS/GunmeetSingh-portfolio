@@ -1,14 +1,18 @@
-import { ImageResponse } from "next/og";
+import { ImageResponse } from "next/og"
 
-export const runtime = "edge";
-export const alt = `${process.env.NEXT_PUBLIC_YOUR_NAME} - Full Stack Web Developer`;
+export const runtime = "edge"
+export const alt = "Gunmeet Singh - Full Stack Web Developer"
 export const size = {
   width: 1200,
   height: 630,
-};
-export const contentType = "image/png";
+}
+export const contentType = "image/png"
 
 export default async function Image() {
+  const name = "Gunmeet Singh"
+  const siteUrl = "gunmeetsingh-dev.vercel.app"
+  const techStack = ["Next.js", "React", "TypeScript", "Node.js", "PostgreSQL"]
+
   return new ImageResponse(
     (
       <div
@@ -54,7 +58,7 @@ export default async function Image() {
             textShadow: "0 4px 12px rgba(0,0,0,0.2)",
           }}
         >
-          ${process.env.NEXT_PUBLIC_YOUR_NAME}
+          {name}
         </h1>
 
         {/* Title */}
@@ -79,24 +83,22 @@ export default async function Image() {
             marginBottom: 20,
           }}
         >
-          {["Next.js", "React", "TypeScript", "Node.js", "PostgreSQL"].map(
-            (tech) => (
-              <div
-                key={tech}
-                style={{
-                  background: "rgba(255, 255, 255, 0.2)",
-                  backdropFilter: "blur(10px)",
-                  padding: "12px 24px",
-                  borderRadius: 30,
-                  color: "white",
-                  fontSize: 22,
-                  fontWeight: "600",
-                }}
-              >
-                {tech}
-              </div>
-            )
-          )}
+          {techStack.map((tech) => (
+            <div
+              key={tech}
+              style={{
+                background: "rgba(255, 255, 255, 0.2)",
+                backdropFilter: "blur(10px)",
+                padding: "12px 24px",
+                borderRadius: 30,
+                color: "white",
+                fontSize: 22,
+                fontWeight: "600",
+              }}
+            >
+              {tech}
+            </div>
+          ))}
         </div>
 
         {/* Website URL */}
@@ -109,12 +111,12 @@ export default async function Image() {
             fontWeight: "500",
           }}
         >
-          `${process.env.NEXT_PUBLIC_SITE_URL.replace(/^https?:\/\//, "")}`
+          {siteUrl}
         </div>
       </div>
     ),
     {
       ...size,
     }
-  );
+  )
 }
