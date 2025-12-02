@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import toast from "react-hot-toast"
 import confetti from "canvas-confetti"
@@ -27,7 +27,9 @@ export default function Contact() {
   const [loading, setLoading] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
   const [typedMessage, setTypedMessage] = useState("")
-  const [savedName, setSavedName] = useState("") 
+  const [savedName, setSavedName] = useState("")
+  
+  const typewriterRef = useRef(null)
 
   useEffect(() => {
     const handleKeyPress = (e) => {
@@ -42,22 +44,35 @@ export default function Contact() {
 
   useEffect(() => {
     if (showSuccess && savedName) {
-      const message = `Thank you ${savedName}! I'll review your message and get back to you soon.`
-      let i = 0
+      const fullMessage = `Thank you ${savedName}! I'll review your message and get back to you soon.`
+      let currentIndex = 0
+      
       setTypedMessage("")
+      
+      if (typewriterRef.current) {
+        clearInterval(typewriterRef.current)
+      }
 
-      const typeWriter = setInterval(() => {
-        if (i < message.length) {
-          setTypedMessage((prev) => prev + message.charAt(i))
-          i++
+      typewriterRef.current = setInterval(() => {
+        if (currentIndex < fullMessage.length) {
+          setTypedMessage((prev) => fullMessage.substring(0, currentIndex + 1))
+          currentIndex++
         } else {
-          clearInterval(typeWriter)
+          if (typewriterRef.current) {
+            clearInterval(typewriterRef.current)
+            typewriterRef.current = null
+          }
         }
-      }, 50)
+      }, 30) 
 
-      return () => clearInterval(typeWriter)
+      return () => {
+        if (typewriterRef.current) {
+          clearInterval(typewriterRef.current)
+          typewriterRef.current = null
+        }
+      }
     }
-  }, [showSuccess, savedName]) 
+  }, [showSuccess, savedName])
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -100,8 +115,9 @@ export default function Contact() {
 
         setTimeout(() => {
           setShowSuccess(false)
-          setSavedName("") 
-        }, 5000)
+          setSavedName("")
+          setTypedMessage("")
+        }, 6000) 
 
       } else {
         toast.error(data.error || "Failed to send message")
@@ -322,9 +338,11 @@ export default function Contact() {
               Message Sent Successfully!
             </h3>
 
-            <div className="font-mono text-teal-600 dark:text-teal-400 text-base sm:text-lg mb-4 min-h-[50px] sm:min-h-[60px]">
-              {typedMessage}
-              <span className="animate-pulse">|</span>
+            <div className="font-mono text-teal-600 dark:text-teal-400 text-base sm:text-lg mb-4 min-h-[80px] sm:min-h-[90px] flex items-center justify-center">
+              <span>
+                {typedMessage}
+                <span className="animate-pulse">|</span>
+              </span>
             </div>
 
             <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-6">
@@ -333,7 +351,8 @@ export default function Contact() {
             <button
               onClick={() => {
                 setShowSuccess(false)
-                setSavedName("") 
+                setSavedName("")
+                setTypedMessage("")
               }}
               className="px-6 py-2.5 sm:py-3 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors font-medium text-sm sm:text-base"
             >
