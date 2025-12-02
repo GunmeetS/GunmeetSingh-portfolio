@@ -105,7 +105,7 @@ export default async function Image() {
         <div
           style={{
             position: "absolute",
-            bottom: 40,
+            bottom: 15,
             fontSize: 28,
             color: "rgba(255, 255, 255, 0.9)",
             fontWeight: "500",
