@@ -23,7 +23,7 @@ export default function Experience() {
         "Integrated third-party APIs (Stripe, Telegram, Email)",
       ],
       technologies: ["Next.js", "React", "TypeScript", "PostgreSQL", "Prisma", "Laravel"],
-      current: true,
+      current: false,
     },
     {
       id: 2,
