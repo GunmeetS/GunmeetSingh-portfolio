@@ -77,7 +77,7 @@ export default function Hero() {
               View My Work
             </button>
             <a
-              href="/resume.pdf"
+              href="/Gunmeet_Singh.pdf"
               download
               className="w-full xs:w-auto px-6 sm:px-8 md:px-10 py-3 sm:py-3.5 md:py-4 border-2 border-teal-600 text-teal-600 dark:text-teal-400 dark:border-teal-400 rounded-lg hover:bg-teal-50 dark:hover:bg-teal-900/30 transition-all font-semibold text-sm sm:text-base md:text-lg text-center active:scale-95"
             >

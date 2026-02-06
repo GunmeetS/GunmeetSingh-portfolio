@@ -14,7 +14,7 @@ export default function Experience() {
       position: "Full Stack Web Developer",
       type: "Full-time",
       location: "Remote",
-      duration: "Sept 2024 - Present",
+      duration: "Sept 2024 - December 2025",
       shortDescription: "Building web applications using Next.js, Laravel, and python technologies.",
       achievements: [
         "Developed 9 production-ready applications",
@@ -201,7 +201,7 @@ export default function Experience() {
         <SlideUp delay={0.4}>
           <div className="text-center mt-12">
             <a
-              href="/resume.pdf"
+              href="/Gunmeet_Singh.pdf"
               download
               className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-lg hover:from-teal-600 hover:to-teal-700 transition-all font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-1"
             >
